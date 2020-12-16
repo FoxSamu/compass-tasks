@@ -1,0 +1,58 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group 'net.shadew.lode'
+version '0.1.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://maven.shadew.net/"
+    }
+}
+
+dependencies {
+    implementation "net.shadew:shwutil:1.5.0"
+    implementation "net.shadew:mapping-tools:0.1.5"
+    implementation 'org.ow2.asm:asm:8.0.1'
+    implementation 'org.ow2.asm:asm-tree:8.0.1'
+    implementation 'org.ow2.asm:asm-commons:8.0.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.jboss.windup.decompiler.fernflower:fernflower:2.5.0.Final'
+
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+}
+
+task sourceJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allJava
+}
+
+build {
+    dependsOn sourceJar
+}
+
+publishing {
+    publications {
+        maven( MavenPublication ) {
+            groupId = project.group
+            artifactId = 'compass-tasks'
+            version = project.version
+
+            from components.java
+            artifact tasks.sourceJar
+        }
+    }
+    repositories {
+        maven {
+            name = "ShwMaven"
+            url = uri( "https://maven.shadew.net/" )
+            credentials {
+                username = shwMavenUser
+                password = shwMavenPass
+            }
+        }
+    }
+}
